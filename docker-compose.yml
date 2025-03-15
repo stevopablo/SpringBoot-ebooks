@@ -1,0 +1,31 @@
+services:
+  crud:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crud_app
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=jdbc:mysql://book:3306/books?createDatabaseIfNotExist=True
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - SPRING_JPA_HIBERNATE_DDL-AUTO=update
+    depends_on:
+      - book
+
+  book:
+    image: mysql:8.0.32
+    container_name: mysql_db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: books
+      MYSQL_USER: root
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping","localhost"]
+      timeout: 10s
+      retries: 5
+
